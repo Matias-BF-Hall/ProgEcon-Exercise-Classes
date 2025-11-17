@@ -72,7 +72,7 @@ class ProductionCO2ModelClass():
 
         w = 1.0 # normalization
 
-        income = w*l+par.T+sol.pi1+sol.pi2
+        income = w*l+par.T+sol.pi1+sol.pi2 # removed the + 0.1 here
 
         sol.c1 = par.alpha*income/p1
         sol.c2 = (1-par.alpha)*income/(p2+par.tau)

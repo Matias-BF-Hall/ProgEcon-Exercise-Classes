@@ -69,7 +69,9 @@ class ExchangeEconomyModelQuasiLinearClass(ExchangeEconomyModelClass):
             return x1, income - p1*x1
         else:
             return income/p1, 0
-        
+    
+    # See my comments for dictatorA in ExchangeEconomyModel.py
+    # The same logic applies for dictatorB below
     def solve_dictator_B(self):
         """ 
         Solve the dictator problem for agent B.
@@ -79,7 +81,7 @@ class ExchangeEconomyModelQuasiLinearClass(ExchangeEconomyModelClass):
 
         # a. objective
         def obj(xB):
-            return -self.utility_A(xB[0],xB[1])
+            return -self.utility_B(xB[0],xB[1])
 
         # b. constraint
         uA_w = self.utility_A(par.w1A,par.w2A)

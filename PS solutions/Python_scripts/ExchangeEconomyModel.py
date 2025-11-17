@@ -134,11 +134,14 @@ class ExchangeEconomyModelClass:
 
         par = self.par
         
+        # compute utility level at (x1A,x2A)
         uA = self.utility_A(x1A,x2A)
         
+        # create grid and compute points on indifference curve
         x1A_grid = np.linspace(0.001,0.999,1000)
         x2A_grid = self.x2A_indifference(uA,x1A_grid)
         
+        # only plot points inside the box
         I = (x2A_grid > 0) & (x2A_grid < 1) # only inside box
         ax_A.plot(x1A_grid[I],x2A_grid[I],**kwargs)
 
@@ -165,15 +168,18 @@ class ExchangeEconomyModelClass:
         par = self.par
         sol = self.sol
         
+        # compute utility levels at initial endowment
         uA = self.utility_A(par.w1A,par.w2A)
         uB = self.utility_B(1-par.w1A,1-par.w2A)
         
+        # create grid and compute points on indifference curves
         x1A_vec = np.linspace(0.01,0.99,1000)
         x2A_vec = self.x2A_indifference(uA,x1A_vec)
         
         x1B_vec = 1 - x1A_vec
         x2B_vec = self.x2B_indifference(uB,x1B_vec)
         
+        # plot grey area where both are better off
         I = x2A_vec < 1-x2B_vec
         I &= x2A_vec > 0
         I &= x2A_vec < 1.0
@@ -218,6 +224,7 @@ class ExchangeEconomyModelClass:
         x1A,x2A = self.demand_A(p1)
         x1B,x2B = self.demand_B(p1)
 
+        # excess demand - should be zero in equilibrium why we use a root-finder in solve_walras
         eps1 = (x1A-par.w1A) + x1B-(1-par.w1A)
         eps2 = (x2A-par.w2A) + x2B-(1-par.w2A)
 
@@ -317,17 +324,21 @@ class ExchangeEconomyModelClass:
         """ 
         Solve the dictator problem for agent A.
         """
-
+        # unpack
         par = self.par
         sol = self.sol
 
         # a. objective
+        # A maximizes own negative utility since we minimise
         def obj(xA):
             return -self.utility_A(xA[0],xA[1])
 
         # b. constraint
+        # find B's utility at initial endowment
+        # and make sure B gets at least that utility with the constraint
         uB_w = self.utility_B(1-par.w1A,1-par.w2A)
         constraints = ({'type': 'ineq', 'fun': lambda x: self.utility_B(1-x[0],1-x[1]) - uB_w})
+        # bound the solution inside the Edgeworth box
         bounds = ((0,1),(0,1))
         
         # c. optimize
@@ -335,6 +346,7 @@ class ExchangeEconomyModelClass:
                                 method='SLSQP',
                                 bounds=bounds,constraints=constraints)
         
+        # get utility and demand from solution object 'opt' for A, and same for B with A's solution
         sol.xA_dictatorA = opt.x
         sol.uA_dictatorA = -opt.fun
         sol.uB_dictatorA = self.utility_B(1-sol.xA_dictatorA[0],1-sol.xA_dictatorA[1])
