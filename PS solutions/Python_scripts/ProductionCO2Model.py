@@ -136,7 +136,7 @@ class ProductionCO2ModelClass():
 
         # poorly explained in the PS so I opted for computing excess demand as the market clearing errors
         # as the solve grid search only relies on two errors the labour market clearing is redundant but I include it anyways
-        # actually because of walras law, we only need to check if one market clears, that is one error is enough
+        # actually because of walras law, we only need to check if two market clears, that is two errors are enough
         error_1 = sol.c1 - sol.y1
         error_2 = sol.c2 - sol.y2
         error_3 = sol.l - sol.l1 - sol.l2
